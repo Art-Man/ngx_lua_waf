@@ -86,6 +86,20 @@ function whiteurl()
     end
     return false
 end
+
+function requestMode(method)
+    local items = Set(request_mode)
+    method=string.upper(method)
+	for mode in pairs(items) do
+--		if not ngx.re.match(method,mode,"isjo") then
+		if ngx.re.match(method,mode,"isjo") then
+			return false
+		end
+	end
+	log(method,ngx.var.request_uri,"-","attack with HTTP method "..method)
+	say_html()
+end
+
 function fileExtCheck(ext)
     local items = Set(black_fileExt)
     ext=string.lower(ext)
@@ -99,11 +113,13 @@ function fileExtCheck(ext)
     end
     return false
 end
+
 function Set (list)
   local set = {}
   for _, l in ipairs(list) do set[l] = true end
   return set
 end
+
 function args()
     for _,rule in pairs(argsrules) do
         local args = ngx.req.get_uri_args()

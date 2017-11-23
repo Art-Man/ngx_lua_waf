@@ -44,6 +44,8 @@ nginx安装路径假设为:/usr/local/nginx/conf/
 
 然后重启nginx即可
 
+#mkdir -p /var/log/nginx/hack/
+#chown -R nobody:nobody /var/log/nginx/hack
 
 ###配置文件详细说明：
 
