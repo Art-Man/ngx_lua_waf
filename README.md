@@ -31,21 +31,23 @@ nginx安装路径假设为:/usr/local/nginx/conf/
 
 在nginx.conf的http段添加
 
-		lua_package_path "/usr/local/nginx/conf/waf/?.lua";
-        lua_shared_dict limit 10m;
-        init_by_lua_file  /usr/local/nginx/conf/waf/init.lua; 
-    	access_by_lua_file /usr/local/nginx/conf/waf/waf.lua;
+	lua_package_path "/etc/nginx/lua_waf/?.lua";
+	lua_shared_dict limit 50m;
+	init_by_lua_file  /etc/nginx/lua_waf/init.lua; 
+	access_by_lua_file /etc/nginx/lua_waf/waf.lua;
+
 
 配置config.lua里的waf规则目录(一般在waf/conf/目录下)
 
-        RulePath = "/usr/local/nginx/conf/waf/wafconf/"
+        RulePath = "/etc/nginx/lua_waf/wafconf/"
 
 绝对路径如有变动，需对应修改
 
-然后重启nginx即可
+创建并授权日志目录
+# mkdir -p /var/log/nginx/hack/
+# chown -R nobody:nobody /var/log/nginx/hack
 
-#mkdir -p /var/log/nginx/hack/
-#chown -R nobody:nobody /var/log/nginx/hack
+然后重启nginx即可
 
 ###配置文件详细说明：
 
@@ -67,6 +69,8 @@ nginx安装路径假设为:/usr/local/nginx/conf/
         --是否开启URL白名单
         black_fileExt={"php","jsp"}
         --填写不允许上传文件后缀类型
+		request_mode={"GET","POST","PUT","DELETE","PATCH"}
+        --填写允许的HTTP的请求方式
         ipWhitelist={"127.0.0.1"}
         --ip白名单，多个ip用逗号分隔
         ipBlocklist={"1.0.0.1"}
@@ -120,6 +124,7 @@ nginx安装路径假设为:/usr/local/nginx/conf/
 	日志文件名称格式如下:虚拟主机名_sec.log
 
 
+
 ## Copyright
 
 <table>
@@ -138,3 +143,87 @@ nginx安装路径假设为:/usr/local/nginx/conf/
 </table>
 	
 感谢ngx_lua模块的开发者[@agentzh](https://github.com/agentzh/),春哥是我所接触过开源精神最好的人
+
+
+
+补充 CentOS6下安装配置：
+
+升级环境
+# yum install -y epel-release yum-utils
+# yum-config-manager --enable epel
+# yum clean all && yum update -y
+
+环境安装
+# yum -y  install readline-devel pcre-devel openssl-devel perl
+# yum -y install gcc gcc-c++ make zlib-devel pcre-devel openssl-devel
+
+# wget http://luajit.org/download/LuaJIT-2.1.0-beta3.tar.gz
+# tar -xvf LuaJIT-2.1.0-beta3.tar.gz
+# cd LuaJIT-2.1.0-beta3
+# make
+# make install
+# luajit -v
+LuaJIT 2.1.0-beta3 -- Copyright (C) 2005-2015 Mike Pall.
+http://luajit.org/
+
+#下载对应版本 https://github.com/openresty/openresty/releases
+
+wget https://github.com/openresty/openresty/releases/download/v1.13.6.1/openresty-1.13.6.1.tar.gz
+# tar -xvf openresty-1.13.6.1.tar.gz
+# cd openresty-1.13.6.1
+#[root@YNedut nginx-1.11.8]# vi src/core/nginx.h 
+# vi bundle/nginx-1.13.6/src/core/nginx.h
+
+修改Nginx的响应内容
+--------------------------------------------
+#define NGINX_VERSION      "1.2.3.4"
+#define NGINX_VER          "NGINX/" NGINX_VERSION
+
+#define NGINX_VAR          "NGINX"
+--------------------------------------------
+
+#./configure \
+ --prefix=/etc/nginx \
+ --sbin-path=/usr/sbin/nginx \
+ --conf-path=/etc/nginx/nginx.conf \
+ --error-log-path=/var/log/nginx/error.log \
+ --http-log-path=/var/log/nginx/access.log \
+ --pid-path=/var/run/nginx.pid \
+ --lock-path=/var/run/nginx.lock \
+ --http-client-body-temp-path=/var/cache/nginx/client_temp \
+ --http-proxy-temp-path=/var/cache/nginx/proxy_temp \
+ --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
+ --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
+ --http-scgi-temp-path=/var/cache/nginx/scgi_temp \
+ --user=nobody \
+ --group=nobody \
+ --with-http_ssl_module \
+ --with-http_realip_module \
+ --with-http_addition_module \
+ --with-http_sub_module \
+ --with-http_dav_module \
+ --with-http_flv_module \
+ --with-http_mp4_module \
+ --with-http_gunzip_module \
+ --with-http_gzip_static_module \
+ --with-http_random_index_module \
+ --with-http_secure_link_module \
+ --with-http_stub_status_module \
+ --with-http_auth_request_module \
+ --with-mail \
+ --with-mail_ssl_module \
+ --with-file-aio \
+ --with-threads \
+ --with-stream \
+ --with-stream_ssl_module \
+ --with-http_v2_module \
+ --with-http_slice_module \
+ --with-luajit \
+ --without-http_redis2_module \
+ --with-http_iconv_module
+ 
+ #cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+ #service ntpd start
+ 
+ #gmake && gmake install   #openresty 安装
+ #make && make install
