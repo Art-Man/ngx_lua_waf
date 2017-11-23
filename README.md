@@ -163,26 +163,25 @@ nginx安装路径假设为:/usr/local/nginx/conf/
 # make
 # make install
 # luajit -v
-LuaJIT 2.1.0-beta3 -- Copyright (C) 2005-2015 Mike Pall.
-http://luajit.org/
+	LuaJIT 2.1.0-beta3 -- Copyright (C) 2005-2015 Mike Pall.
+	http://luajit.org/
 
-#下载对应版本 https://github.com/openresty/openresty/releases
-
-wget https://github.com/openresty/openresty/releases/download/v1.13.6.1/openresty-1.13.6.1.tar.gz
+下载对应版本 https://github.com/openresty/openresty/releases
+# wget https://github.com/openresty/openresty/releases/download/v1.13.6.1/openresty-1.13.6.1.tar.gz
 # tar -xvf openresty-1.13.6.1.tar.gz
 # cd openresty-1.13.6.1
-#[root@YNedut nginx-1.11.8]# vi src/core/nginx.h 
+# [root@YNedut nginx-1.11.8]# vi src/core/nginx.h 
 # vi bundle/nginx-1.13.6/src/core/nginx.h
 
 修改Nginx的响应内容
 --------------------------------------------
-#define NGINX_VERSION      "1.2.3.4"
-#define NGINX_VER          "NGINX/" NGINX_VERSION
+# define NGINX_VERSION      "1.2.3.4"
+# define NGINX_VER          "NGINX/" NGINX_VERSION
 
-#define NGINX_VAR          "NGINX"
+# define NGINX_VAR          "NGINX"
 --------------------------------------------
 
-#./configure \
+# ./configure \
  --prefix=/etc/nginx \
  --sbin-path=/usr/sbin/nginx \
  --conf-path=/etc/nginx/nginx.conf \
@@ -222,8 +221,9 @@ wget https://github.com/openresty/openresty/releases/download/v1.13.6.1/openrest
  --without-http_redis2_module \
  --with-http_iconv_module
  
- #cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
- #service ntpd start
+ # cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+ # service ntpd start
  
- #gmake && gmake install   #openresty 安装
- #make && make install
+ openresty 安装
+ # gmake && gmake install
+ # make && make install
