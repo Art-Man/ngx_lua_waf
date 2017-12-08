@@ -17,3 +17,4 @@ java\.lang
 \$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\[
 \<(iframe|script|layer|meta|base|object|input)
 (onmouseover|onerror|onload)\=
+(博.{0,2}彩|反.{0,4}共)
